@@ -268,7 +268,7 @@ def scan_order(c, conn):
                   (input_code,))
         product_code = c.fetchone()
         # If input is not barcode in database, then go through steps to check if it is a valid product code input
-        if product_code[0] is None:
+        if product_code is None:
             input_code = input_code.upper()
             if pn_regex_check(input_code) is False:
                 print("ERROR: Barcode does not exist in database or "
@@ -284,17 +284,18 @@ def scan_order(c, conn):
             # If product code does not exist on the order, ask user if they want to force add
             if on_order[0] == 0:
                 while True:
-                    add_to_order = input(input_code + "is not on the order list. Force add to order (y/n)?")
+                    add_to_order = input(input_code + " is not on the order list. Force add to order (y/n)?")
                     if add_to_order == "y" or add_to_order == "yes":
                         quantity = get_quantity()
                         if quantity is None:
-                            continue
+                            break
                         else:
                             c.execute("INSERT INTO scanned_products "
                                       "VALUES(?,?,0,?)",
                                       (order_num, input_code, quantity,))
+                            break
                     elif add_to_order == "n" or add_to_order == "no":
-                        continue
+                        break
                     else:
                         print("Try again, valid input is 'y' or 'n'")
             # If product code does exists on the order, ask user what quantity they want to add
@@ -380,14 +381,14 @@ def get_quantity():
     while True:
         try:
             user_input = input("Quantity:")
-            if user_input == "cancel":
+            if user_input == "cancel" or user_input == "back":
                 return None
             else:
                 quantity = int(user_input)
                 return quantity
         except ValueError:
-            print("Input was not an integer. Try again or type 'cancel'.")
-            continue
+            print("Input was not an integer. Aborted.")
+            return None
 
 
 def remove_order(c, conn):
@@ -491,7 +492,7 @@ def main():
         elif cmd == "list orders":
             list_orders(c)
         elif cmd == "load barcodes":
-            load_barcodes(c,conn)
+            load_barcodes(c, conn)
         elif cmd == "?" or cmd == "help":
             print("List of commands: load pdf, scan, add barcode, remove barcode, check order, "
                   "remove order, list orders, adjust quantity, exit")
