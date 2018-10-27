@@ -1,6 +1,8 @@
 # stock-checker
 Verify stock deliveries using this program - Designed for Jaycar
 
-Coming features:
-  * GUI
-  * PDF Print Out
+# StockChecker CLI
+Command Line Interface Version
+
+# StockChecker GUI
+Graphical User Interface Version - Made using Kivy

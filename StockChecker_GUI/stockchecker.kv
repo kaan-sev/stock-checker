@@ -1,0 +1,501 @@
+#:kivy 1.9
+#:import ScreenManager kivy.uix.screenmanager.ScreenManager
+#:import Screen kivy.uix.screenmanager.ScreenManager
+#:import sm kivy.uix.screenmanager
+#:import Factory kivy.factory.Factory
+#:import os os
+
+ScreenManager:
+    transition: sm.SwapTransition()
+    MenuScreen:
+        id: menu
+        name: 'MenuScreen'
+        manager: 'screen_manager'
+    ImportPDFScreen:
+        id: importpdf
+        name: 'ImportPDFScreen'
+        manager: 'screen_manager'
+    CheckOrderScreen:
+        id: checkorder
+        name: 'CheckOrderScreen'
+        manager: 'screen_manager'
+    VerifyOrderScreen:
+        id: verifyorder
+        name: 'VerifyOrderScreen'
+        manager: 'screen_manager'
+    AdvancedScreen:
+        id: advanced
+        name: 'AdvancedScreen'
+        manager: 'screen_manager'
+
+<ImportPDFScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        FileChooserListView:
+            id: file_chooser
+            rootpath: os.getcwd()
+            filters: ['*.pdf']
+        Button:
+            text: 'Start Import'
+            size_hint_max_y: 50
+            font_size: 30
+            on_release: root.start_import()
+        Button:
+            text: 'Refresh Folder'
+            size_hint_max_y: 50
+            font_size: 30
+            on_release: root.refresh_view()
+        Button:
+            text: 'Back to Main Menu'
+            size_hint_max_y: 50
+            font_size: 30
+            on_release: app.root.current = 'MenuScreen'
+
+<CheckOrderScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            size_hint_max_y: 50
+            text: 'Check Order'
+            font_size: 30
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_max_y: 50
+            TextInput:
+                id : checkordernum
+                multiline: False
+                font_size: 30
+                width: 300
+            Button:
+                size_hint_max_x: 200
+                text: "Load Order"
+                on_release: root.load_order()
+        RecycleView:
+            BoxLayout:
+                orientation: 'vertical'
+                GridLayout:
+                    size_hint: 1, None
+                    size_hint_y: None
+                    height: 25
+                    cols: 5
+                    Label:
+                        size_hint_x: .2
+                        text: 'Order Number'
+                    Label:
+                        size_hint_x: .2
+                        text: 'Product Code'
+                    Label:
+                        size_hint_x: .2
+                        text: 'Expected Quantity'
+                    Label:
+                        size_hint_x: .2
+                        text: 'Counted Quantity'
+                    Label:
+                        size_hint_x: .2
+                        text: 'Difference'
+                BoxLayout:
+                    RecycleView:
+                        viewclass: 'Button'
+                        data: root.data_items
+                        RecycleGridLayout:
+                            cols: 5
+                            default_size: None, dp(26)
+                            default_size_hint: 1, None
+                            size_hint_y: None
+                            height: self.minimum_height
+                            orientation: 'vertical'
+                            multiselect: True
+                            touch_multiselect: True
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_max_y: 50
+            Label:
+                text: "Last Entered Item:"
+                size_hint_max_x: 130
+            Label:
+                id: last_entered_item
+                text: ""
+            Label:
+                text: "Quantity Added:"
+                size_hint_max_x: 130
+            Label:
+                id: last_entered_quantity
+                text: ""
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_max_y: 50
+            Label:
+                text: "Barcode/PN:"
+                size_hint_max_x: 130
+            TextInput:
+                id : scaninput
+                multiline: False
+                font_size: 30
+            Label:
+                text: "Quantity:"
+                size_hint_max_x: 130
+            TextInput:
+                id : quantity
+                multiline: False
+                font_size: 30
+                size_hint_x: .3
+            Button:
+                size_hint_max_x: 100
+                text: "Enter"
+                on_release: root.add_to_db()
+        Button:
+            size_hint_max_y: 50
+            text: 'Back to Main Menu'
+            font_size: 20
+            on_release: app.root.current = 'MenuScreen'
+
+
+<VerifyOrderScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            size_hint_max_y: 50
+            text: 'Verify Order'
+            font_size: 30
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_max_y: 50
+            TextInput:
+                id : verifyordernum
+                multiline: False
+                font_size: 30
+                width: 300
+            Button:
+                size_hint_max_x: 200
+                text: "Search for Order"
+                on_release: root.search_order()
+            BoxLayout:
+                size_hint_max_x: 200
+                orientation: 'vertical'
+                CheckBox:
+                    id: verifychkbox
+                Label:
+                    text: "Only View Overs/Unders"
+        RecycleView:
+            BoxLayout:
+                orientation: 'vertical'
+                GridLayout:
+                    size_hint: 1, None
+                    size_hint_y: None
+                    height: 25
+                    cols: 5
+                    Label:
+                        size_hint_x: .2
+                        text: 'Order Number'
+                    Label:
+                        size_hint_x: .2
+                        text: 'Product Code'
+                    Label:
+                        size_hint_x: .2
+                        text: 'Expected Quantity'
+                    Label:
+                        size_hint_x: .2
+                        text: 'Counted Quantity'
+                    Label:
+                        size_hint_x: .2
+                        text: 'Difference'
+                BoxLayout:
+                    RecycleView:
+                        viewclass: 'Button'
+                        data: root.data_items
+                        RecycleGridLayout:
+                            cols: 5
+                            default_size: None, dp(26)
+                            default_size_hint: 1, None
+                            size_hint_y: None
+                            height: self.minimum_height
+                            orientation: 'vertical'
+                            multiselect: True
+                            touch_multiselect: True
+        Button:
+            size_hint_max_y: 50
+            font_size: 20
+            text: 'Print to PDF'
+            disabled: True
+            on_release:
+        Button:
+            size_hint_max_y: 50
+            font_size: 20
+            text: 'Back to Main Menu'
+            on_release: app.root.current = 'MenuScreen'
+
+<MenuScreen>:
+    on_pre_enter: root.init_ui()
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            text: 'Stock Checker'
+            font_size: 50
+        Button:
+            id: importpdfbutton
+            text: 'Import PDF (Order)'
+            font_size: 30
+            on_release: app.root.current = 'ImportPDFScreen'
+        Button:
+            id: checkorderbutton
+            text: 'Check Order'
+            font_size: 30
+            on_release: app.root.current = 'CheckOrderScreen'
+        Button:
+            id: verifyorderbutton
+            text: 'Verify Order'
+            font_size: 30
+            on_release: app.root.current = 'VerifyOrderScreen'
+        Button:
+            text: 'Advanced'
+            font_size: 30
+            on_release: app.root.current = 'AdvancedScreen'
+
+<AdvancedScreen>:
+    on_pre_enter: root.init_ui()
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            text: 'Advanced'
+            font_size: 50
+        Button:
+            id: initalisedbbutton
+            text: 'Initialise Database'
+            font_size: 30
+            on_release: root.initialise_db
+        Button:
+            id: import_csv
+            text: 'Import Barcode CSV to DB'
+            font_size: 30
+            on_release: root.import_barcodes()
+        Button:
+            id: export_csv
+            text: 'Export Barcode DB to CSV'
+            font_size: 30
+            on_release: root.export_barcodes()
+        Button:
+            id: add_bar
+            text: 'Add Barcode to DB'
+            font_size: 30
+            on_release: Factory.AddBarcodePopup().open()
+        Button:
+            id: rm_bar
+            text: 'Remove Barcode from DB'
+            font_size: 30
+            on_release: Factory.RemoveBarcodePopup().open()
+        Button:
+            text: 'Back to Main Menu'
+            font_size: 30
+            on_release: app.root.current = 'MenuScreen'
+
+<AddBarcodePopup>:
+    title: ''
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            text: 'Add Barcode to Database'
+            underline: True
+            font_size: 30
+            size_hint_max_y: 50
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_max_y: 50
+            Label:
+                text: 'Barcode:'
+                font_size: 30
+            TextInput:
+                id : add_bc_barcode
+                multiline: False
+                font_size: 30
+                width: 300
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_max_y: 50
+            Label:
+                text: 'Product Code:'
+                font_size: 30
+            TextInput:
+                id : add_bc_product_code
+                multiline: False
+                font_size: 30
+                width: 300
+        Label:
+            id: warning_label
+            text: ''
+            font_size: 30
+            color: 1,0,0,1
+            halign: 'center'
+        Label:
+            text: ''
+            text_size: self.size
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_max_y: 50
+            Button:
+                text: "Save"
+                on_release: root.save_barcode()
+            Button:
+                text: "Cancel"
+                on_release: root.dismiss()
+
+<RemoveBarcodePopup>:
+    title: ''
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            text: 'Remove Barcode from Database'
+            underline: True
+            font_size: 30
+            size_hint_max_y: 50
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_max_y: 50
+            Label:
+                text: 'Barcode:'
+                font_size: 30
+            TextInput:
+                id : rm_bc_barcode
+                multiline: False
+                font_size: 30
+                width: 300
+        Label:
+            id: rm_warning_label
+            text: ''
+            font_size: 30
+            color: 1,0,0,1
+            halign: 'center'
+        Label:
+            text: ''
+            text_size: self.size
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_max_y: 50
+            Button:
+                text: "Save"
+                on_release: root.remove_barcode()
+            Button:
+                text: "Cancel"
+                on_release: root.dismiss()
+
+<ForceAddProductToOrderPopup>:
+    title: ''
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            text: 'Force Add Product To Order'
+            underline: True
+            font_size: 30
+            size_hint_max_y: 50
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_max_y: 50
+            Label:
+                id: title_product_code
+                text: ''
+                font_size: 30
+            Label:
+                text: ' is not on order '
+                font_size: 30
+            Label:
+                id: title_order_number
+                text: ''
+                font_size: 30
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_max_y: 50
+            Label:
+                text: 'Product Code:'
+                font_size: 30
+            Label:
+                id: body_product_code
+                text: ''
+                font_size: 30
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_max_y: 50
+            Label:
+                text: 'Quantity:'
+                font_size: 30
+            Label:
+                id: body_quantity
+                text: ''
+                font_size: 30
+        Label:
+            text: ''
+            text_size: self.size
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_max_y: 50
+            Button:
+                text: "Add To Order"
+                id: force_add_confirm
+                on_release: root.add_to_order()
+            Button:
+                text: "Cancel"
+                on_release: root.dismiss()
+
+
+<LoadingPopup>:
+    title: ''
+    BoxLayout:
+        orientation: 'vertical'
+        FileChooserListView:
+            id: file_chooser
+            rootpath: os.getcwd()
+            filters: ['*.csv']
+        Label:
+            id: import_warning
+            text: ''
+            size_hint_max_y: 50
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_max_y: 50
+            Button:
+                text: 'Start Import'
+                on_release: root.import_barcodes()
+            Button:
+                text: 'Refresh Folder'
+                on_release: root.refresh_view()
+            Button:
+                text: "Cancel"
+                on_release: root.dismiss()
+
+
+<ExportPopup>:
+    title: ''
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            text: 'Export Barcode Database to CSV'
+            underline: True
+            font_size: 30
+            size_hint_max_y: 50
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_max_y: 50
+            Label:
+                text: 'Filename:'
+                font_size: 30
+            TextInput:
+                id : export_filename
+                multiline: False
+                font_size: 30
+                width: 300
+        Label:
+            id: export_warning
+            text: ''
+            font_size: 30
+            color: 1,0,0,1
+            halign: 'center'
+        Label:
+            text: ''
+            text_size: self.size
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_max_y: 50
+            Button:
+                text: "Export"
+                on_release: root.start_export()
+            Button:
+                text: "Cancel"
+                on_release: root.dismiss()
