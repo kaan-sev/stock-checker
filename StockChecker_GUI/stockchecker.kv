@@ -62,10 +62,11 @@ ScreenManager:
             orientation: 'horizontal'
             size_hint_max_y: 50
             TextInput:
-                id : checkordernum
+                id: checkordernum
                 multiline: False
                 font_size: 30
                 width: 300
+                on_text_validate: root.load_order()
             Button:
                 size_hint_max_x: 200
                 text: "Load Order"
@@ -128,17 +129,21 @@ ScreenManager:
                 text: "Barcode/PN:"
                 size_hint_max_x: 130
             TextInput:
-                id : scaninput
+                id: scaninput
                 multiline: False
                 font_size: 30
+                on_focus: root.update_keyboard()
+                on_text_validate: quantity.focus = True
             Label:
                 text: "Quantity:"
                 size_hint_max_x: 130
             TextInput:
-                id : quantity
+                id: quantity
                 multiline: False
                 font_size: 30
                 size_hint_x: .3
+                on_focus: root.update_keyboard()
+                on_text_validate: root.add_to_db()
             Button:
                 size_hint_max_x: 100
                 text: "Enter"
@@ -148,7 +153,9 @@ ScreenManager:
             text: 'Back to Main Menu'
             font_size: 20
             on_release: app.root.current = 'MenuScreen'
-
+        BoxLayout:
+            id: keyboard_height_changer
+            size_hint_max_y: 1
 
 <VerifyOrderScreen>:
     BoxLayout:
@@ -161,7 +168,7 @@ ScreenManager:
             orientation: 'horizontal'
             size_hint_max_y: 50
             TextInput:
-                id : verifyordernum
+                id: verifyordernum
                 multiline: False
                 font_size: 30
                 width: 300
@@ -304,7 +311,7 @@ ScreenManager:
                 text: 'Barcode:'
                 font_size: 30
             TextInput:
-                id : add_bc_barcode
+                id: add_bc_barcode
                 multiline: False
                 font_size: 30
                 width: 300
@@ -315,7 +322,7 @@ ScreenManager:
                 text: 'Product Code:'
                 font_size: 30
             TextInput:
-                id : add_bc_product_code
+                id: add_bc_product_code
                 multiline: False
                 font_size: 30
                 width: 300
@@ -354,7 +361,7 @@ ScreenManager:
                 text: 'Barcode:'
                 font_size: 30
             TextInput:
-                id : rm_bc_barcode
+                id: rm_bc_barcode
                 multiline: False
                 font_size: 30
                 width: 300
@@ -477,7 +484,7 @@ ScreenManager:
                 text: 'Filename:'
                 font_size: 30
             TextInput:
-                id : export_filename
+                id: export_filename
                 multiline: False
                 font_size: 30
                 width: 300

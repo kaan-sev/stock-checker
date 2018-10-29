@@ -1,3 +1,5 @@
+#import os
+#os.environ['KIVY_GL_BACKEND'] = 'gl'
 from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.properties import BooleanProperty, ListProperty, NumericProperty, ObjectProperty
@@ -80,7 +82,6 @@ class CheckOrderScreen(Screen):
 
     def __init__(self,**kwargs):
         super(CheckOrderScreen, self).__init__(**kwargs)
-
 
     def _on_keyboard_down(self, instance, keyboard, keycode, text, modifiers):
         if self.ids.scaninput.focus and keycode == 40:  # 40 - Enter key pressed
@@ -168,10 +169,17 @@ class CheckOrderScreen(Screen):
                     force_add_popup.open()
             self.ids.quantity.text = '1'
             self.ids.scaninput.text = ''
+        self.ids.scaninput.focus = True
 
     def update_labels(self, prod_code, entered_quantity):
         self.ids.last_entered_item.text = str(prod_code)
         self.ids.last_entered_quantity.text = str(entered_quantity)
+
+    def update_keyboard(self):
+        if self.ids.scaninput.focus is True or self.ids.quantity.focus is True:
+            self.ids.keyboard_height_changer.size_hint_max_y = 300
+        else:
+            self.ids.keyboard_height_changer.size_hint_max_y = 1
 
 
 class VerifyOrderScreen(Screen):
@@ -268,7 +276,7 @@ class ForceAddProductToOrderPopup(Popup):
         self.caller = kwargs.get('caller')
         super(ForceAddProductToOrderPopup, self).__init__()
         self.ids.title_product_code.text = kwargs.get('product_code')
-        self.ids.title_order_number.text = kwargs.get('order_number')
+        self.ids.title_order_number.text = str(kwargs.get('order_number'))
         self.ids.body_product_code.text = kwargs.get('product_code')
         self.ids.body_quantity.text = str(kwargs.get('quantity'))
 
