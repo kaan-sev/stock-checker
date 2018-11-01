@@ -72,6 +72,7 @@ ScreenManager:
                 text: "Load Order"
                 on_release: root.load_order()
         RecycleView:
+            size_hint_max_y: 100 if scaninput.focus or quantity.focus else None
             BoxLayout:
                 orientation: 'vertical'
                 GridLayout:
@@ -95,6 +96,7 @@ ScreenManager:
                         size_hint_x: .2
                         text: 'Difference'
                 BoxLayout:
+
                     RecycleView:
                         viewclass: 'Button'
                         data: root.data_items
@@ -116,12 +118,20 @@ ScreenManager:
             Label:
                 id: last_entered_item
                 text: ""
+                size_hint_max_x: 250
             Label:
                 text: "Quantity Added:"
                 size_hint_max_x: 130
             Label:
                 id: last_entered_quantity
                 text: ""
+            Label:
+                text: "Scan 1:"
+                size_hint_max_x: 75
+            Switch:
+                id: auto_scan
+                size_hint_max_x: 80
+                on_active: quantity.text = '1'
         BoxLayout:
             orientation: 'horizontal'
             size_hint_max_y: 50
@@ -132,8 +142,7 @@ ScreenManager:
                 id: scaninput
                 multiline: False
                 font_size: 30
-                on_focus: root.update_keyboard()
-                on_text_validate: quantity.focus = True
+                on_text_validate: root.check_scan_mode()
             Label:
                 text: "Quantity:"
                 size_hint_max_x: 130
@@ -142,7 +151,7 @@ ScreenManager:
                 multiline: False
                 font_size: 30
                 size_hint_x: .3
-                on_focus: root.update_keyboard()
+                disabled: True if auto_scan.active else False
                 on_text_validate: root.add_to_db()
             Button:
                 size_hint_max_x: 100
@@ -155,7 +164,7 @@ ScreenManager:
             on_release: app.root.current = 'MenuScreen'
         BoxLayout:
             id: keyboard_height_changer
-            size_hint_max_y: 1
+            size_hint_max_y: 600 if scaninput.focus or quantity.focus else 1
 
 <VerifyOrderScreen>:
     BoxLayout:

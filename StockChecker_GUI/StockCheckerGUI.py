@@ -83,10 +83,6 @@ class CheckOrderScreen(Screen):
     def __init__(self,**kwargs):
         super(CheckOrderScreen, self).__init__(**kwargs)
 
-    def _on_keyboard_down(self, instance, keyboard, keycode, text, modifiers):
-        if self.ids.scaninput.focus and keycode == 40:  # 40 - Enter key pressed
-            self.add_to_db()
-
     def load_order(self):
         order_num = validate_order_input(self.ids.checkordernum.text)
         if order_num is not None:
@@ -140,6 +136,7 @@ class CheckOrderScreen(Screen):
                                 self.data_items[idx+3] = {'text': str(int(self.data_items[idx + 3]['text']) + quantity)}
                                 break
                         self.update_labels(self.ids.scaninput.text.upper(), quantity)
+                        self.ids.scaninput.focus = True
                     else:
                         # not on order, popup -> force add to order? (yes, no)
                         force_add_popup = ForceAddProductToOrderPopup(order_number=self.order_number,
@@ -160,6 +157,7 @@ class CheckOrderScreen(Screen):
                             self.data_items[idx + 3] = {'text': str(int(self.data_items[idx + 3]['text']) + quantity)}
                             break
                     self.update_labels(product_code[0], quantity)
+                    self.ids.scaninput.focus = True
                 else:
                     # not on order, popup -> force add to order? (yes, no)
                     force_add_popup = ForceAddProductToOrderPopup(order_number=self.order_number,
@@ -167,25 +165,29 @@ class CheckOrderScreen(Screen):
                                                                   quantity=quantity,
                                                                   caller=self)
                     force_add_popup.open()
-            self.ids.quantity.text = '1'
+            if not self.ids.auto_scan.active:
+                self.ids.quantity.text = ''
             self.ids.scaninput.text = ''
+
+    def check_scan_mode(self):
+        if self.ids.auto_scan.active:
+            self.add_to_db()
+            Clock.schedule_once(self.change_focus)
+        else:
+            self.ids.quantity.focus = True
+
+    def change_focus(self, dt=0):
         self.ids.scaninput.focus = True
 
     def update_labels(self, prod_code, entered_quantity):
         self.ids.last_entered_item.text = str(prod_code)
         self.ids.last_entered_quantity.text = str(entered_quantity)
 
-    def update_keyboard(self):
-        if self.ids.scaninput.focus is True or self.ids.quantity.focus is True:
-            self.ids.keyboard_height_changer.size_hint_max_y = 300
-        else:
-            self.ids.keyboard_height_changer.size_hint_max_y = 1
-
 
 class VerifyOrderScreen(Screen):
     data_items = ListProperty([])
 
-    def __init__(self,**kwargs):
+    def __init__(self, **kwargs):
         super(VerifyOrderScreen, self).__init__(**kwargs)
         #Window.bind(on_key_down=self._on_keyboard_down)
 
@@ -291,6 +293,11 @@ class ForceAddProductToOrderPopup(Popup):
         self.caller.data_items.append({'text': self.ids.body_quantity.text})
         self.caller.ids.last_entered_item.text = self.ids.title_product_code.text
         self.caller.ids.last_entered_quantity.text = self.ids.body_quantity.text
+        self.caller.ids.scaninput.focus = True
+        self.dismiss()
+
+    def cancel(self):
+        self.caller.ids.scaninput.focus = True
         self.dismiss()
 
 
